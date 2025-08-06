@@ -5,13 +5,16 @@ import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { LoginDto } from './dto/login-auth.dto';
 import { UsersService } from 'src/users/users.service';
+import { ConfigService } from '@nestjs/config';
 
 
 @Injectable()
 export class AuthService {
   constructor(private prismaService: PrismaService,
     private jwtService: JwtService,
-    private userService : UsersService
+    private userService: UsersService,
+    private configService: ConfigService // 👈 thêm dòng này
+
   ) { }
   async register(registerDto: RegisterDto) {
     const { email, password, name, roleId } = registerDto;
@@ -24,23 +27,52 @@ export class AuthService {
     const { password: _, ...result } = registerUser;
     return result;
   }
-async signIn(loginDto: LoginDto): Promise<{ access_token: string }> {
-  const user = await this.userService.findByEmail(loginDto.email);
+  async signIn(loginDto: LoginDto) {
+    const user = await this.validateUser(loginDto);
 
-  if (!user) {
-    throw new UnauthorizedException('Email not found');
+    const payload = {
+      username: user.email,
+      sub: {
+        name: user.name,
+      },
+    };
+
+    const accessToken = await this.jwtService.signAsync(payload, {
+      secret: this.configService.get<string>('JWT_ACCESS_SECRET'),
+      expiresIn: this.configService.get<string>('JWT_ACCESS_EXPIRES_IN'),
+    });
+
+    const refreshToken = await this.jwtService.signAsync(payload, {
+      secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
+      expiresIn: this.configService.get<string>('JWT_REFRESH_EXPIRES_IN'),
+    });
+  const { password, ...userWithoutPassword } = user;
+
+    return {
+      userWithoutPassword,
+      backendTokens: {
+        accessToken,
+        refreshToken,
+      },
+    };
   }
 
-  const isPasswordMatch = await bcrypt.compare(loginDto.password, user.password);
+  async validateUser(loginDto: LoginDto) {
+    const user = await this.userService.findByEmail(loginDto.email)
+    if (!user) {
+      throw new UnauthorizedException('Email not found');
+    }
 
-  if (!isPasswordMatch) {
-    throw new UnauthorizedException('Invalid password');
+    const isPasswordMatch = await bcrypt.compare(loginDto.password, user.password);
+
+    if (isPasswordMatch) {
+      const { password, ...result } = user
+      return user
+    }
+    throw new UnauthorizedException('Password invalid');
+
+
+
   }
-
-  const payload = { sub: user.id, email: user.email };
-  return {
-    access_token: await this.jwtService.signAsync(payload),
-  };
-}
 
 }
