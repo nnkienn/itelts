@@ -16,17 +16,43 @@ export class AuthService {
     private configService: ConfigService // 👈 thêm dòng này
 
   ) { }
-  async register(registerDto: RegisterDto) {
-    const { email, password, name, roleId } = registerDto;
-    const existingEmail = await this.prismaService.user.findUnique({ where: { email } });
-    if (existingEmail) {
-      throw new ConflictException("Email is already in user")
-    }
-    const hashPassword = await bcrypt.hash(password, 10)
-    const registerUser = await this.prismaService.user.create({ data: { email, password: hashPassword, name, roleId } })
-    const { password: _, ...result } = registerUser;
-    return result;
+ async register(registerDto: RegisterDto) {
+  const { email, password, name, roleId } = registerDto;
+
+  const existingEmail = await this.prismaService.user.findUnique({ where: { email } });
+  if (existingEmail) {
+    throw new ConflictException("Email is already in use");
   }
+
+  const hashPassword = await bcrypt.hash(password, 10);
+  const user = await this.prismaService.user.create({
+    data: { email, password: hashPassword, name, roleId },
+  });
+
+  const payload = {
+    username: user.email,
+    sub: { name: user.name },
+  };
+
+  const accessToken = await this.jwtService.signAsync(payload, {
+    secret: this.configService.get<string>('JWT_ACCESS_SECRET'),
+    expiresIn: this.configService.get<string>('JWT_ACCESS_EXPIRES_IN'),
+  });
+
+  const refreshToken = await this.jwtService.signAsync(payload, {
+    secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
+    expiresIn: this.configService.get<string>('JWT_REFRESH_EXPIRES_IN'),
+  });
+
+  const { password: _, ...userWithoutPassword } = user;
+
+  return {
+    user: userWithoutPassword,
+    accessToken,
+    refreshToken,
+  };
+}
+
   async signIn(loginDto: LoginDto) {
     const user = await this.validateUser(loginDto);
 
