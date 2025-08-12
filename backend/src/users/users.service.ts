@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma.service';
+import { Prisma } from '@prisma/client';
+export type UserWithRole = Prisma.UserGetPayload<{ include: { role: true } }>;
 
 @Injectable()
 export class UsersService {
@@ -24,6 +26,7 @@ export class UsersService {
   findByEmail(email: string) {
     return this.prisma.user.findUnique({
       where: { email },
+      include: { role: true }
     });
   }
 

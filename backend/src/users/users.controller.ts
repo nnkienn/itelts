@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards } f
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { JwtGuard } from 'src/common/guard/jwt.guard';
+import { Roles } from 'src/common/decorators/roles.decorator';
 
 @Controller('users')
 export class UsersController {
@@ -13,14 +13,15 @@ export class UsersController {
     return this.usersService.create(createUserDto);
   }
 
-  @UseGuards(JwtGuard)
+
   @Get()
+  @Roles('Admin')
   findAll() {
     return this.usersService.findAll();
   }
   @Get('by-email')
+  @Roles('Student')
   findByEmail(@Query('email') email: string) {
-    console.log('EMAIL QUERY:', email);
     return this.usersService.findByEmail(email);
   }
 

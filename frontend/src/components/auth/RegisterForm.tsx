@@ -12,7 +12,7 @@ export default function RegisterForm() {
     password: "",
     name: "",
     dateOfBirth: "",
-    roleId: 1,
+    roleId: 3,
   });
   const { loading, error } = useAppSelector((state) => state.auth);
 
