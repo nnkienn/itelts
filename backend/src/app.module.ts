@@ -10,14 +10,15 @@ import { JwtGuard } from './common/guard/jwt.guard';
 import { PrismaService } from './prisma.service';
 import { RolesModule } from './roles/roles.module';
 import { RolesGuard } from './common/guard/roles.guard';
-
+import { SubmissionsModule } from './submissions/submissions.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     JwtModule.register({}),
     UsersModule,
     AuthModule,
-    RolesModule
+    RolesModule,
+    SubmissionsModule
   ],
   controllers: [AppController],
   providers: [
