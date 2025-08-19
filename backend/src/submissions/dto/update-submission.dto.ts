@@ -1,19 +1,19 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { CreateSubmissionDto } from './create-submission.dto';
-import { IsEnum, IsOptional, IsString, IsNumber, isNumber } from 'class-validator';
+import { SubmissionStatus } from '@prisma/client';
+import { IsEnum, isEnum, IsOptional } from 'class-validator';
 
 export class UpdateSubmissionDto extends PartialType(CreateSubmissionDto) {
+    @IsOptional()
+    @IsEnum(SubmissionStatus)
+    status? : SubmissionStatus
 
     @IsOptional()
-    @IsNumber()
-    paymentId?: number;
+    aiScore?:number
 
     @IsOptional()
-    @IsString()
-    audioUrl?: string;
+    teacherScore?:number
 
     @IsOptional()
-    @IsNumber()
-    contentText?: string;
-
+    gradeAt?: Date
 }

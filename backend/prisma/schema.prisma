@@ -3,6 +3,8 @@
 
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+// ================== GENERATOR & DATASOURCE ==================
 generator client {
   provider = "prisma-client-js"
 }
@@ -12,6 +14,20 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// ================== ENUMS (MỚI) ==================
+enum SubmissionStatus {
+  PENDING
+  AI_GRADED
+  TEACHER_GRADED
+  REJECTED
+}
+
+enum FeedbackSource {
+  AI
+  TEACHER
+}
+
+// ================== MODELS ==================
 model User {
   id           Int           @id @default(autoincrement())
   email        String        @unique
@@ -19,6 +35,9 @@ model User {
   name         String?
   roleId       Int
   role         Role          @relation(fields: [roleId], references: [id])
+
+  // Quota free cho Writing (MỚI)
+  freeUsedWriting Int        @default(0)
 
   payments     Payment[]
   feedbacks    Feedback[]
@@ -33,28 +52,75 @@ model Role {
 }
 
 model Submission {
-  id          Int        @id @default(autoincrement())
-  userId      Int
-  user        User       @relation(fields: [userId], references: [id])
-  type        String     // WRITING / SPEAKING
-  status      String     @default("PENDING")
-  submittedAt DateTime   @default(now())
-  contentText String?
-  audioUrl    String?
-  aiScore     Float?
-  feedbacks   Feedback[]
-  paymentId   Int?
-  payment     Payment?   @relation(fields: [paymentId], references: [id])
+  id            Int              @id @default(autoincrement())
+  userId        Int
+  user          User             @relation(fields: [userId], references: [id])
+  
+  // GIỮ NGUYÊN để không phá code cũ (chuỗi "WRITING" hiện dùng)
+  type          String           // WRITING (sau này muốn enum thì migrate nhẹ)
+  contentText   String?
+  audioUrl      String?
+  
+  // Đổi sang enum ổn định (MỚI)
+  status        SubmissionStatus  @default(PENDING)
+  submittedAt   DateTime          @default(now())
+
+  // Banking đề & metrics
+  promptId      Int?
+  wordCount     Int?
+  aiScore       Float?
+  teacherScore  Float?
+  gradedAt      DateTime?
+
+  // Audit AI (MỚI)
+  modelVersion  String?           // vd "w-2025.08.1"
+  aiProvider    String?           // vd "openai:gpt-4o-mini" | "ft:gpt-4o-mini:..."
+  aiCostUsd     Float?
+
+  feedbacks     Feedback[]
+  
+  paymentId     Int?
+  payment       Payment?          @relation(fields: [paymentId], references: [id])
+
+  @@index([userId, submittedAt])
+  @@index([status, submittedAt])
 }
 
 model Feedback {
   id           Int        @id @default(autoincrement())
   submissionId Int
   submission   Submission @relation(fields: [submissionId], references: [id])
-  userId       Int
-  user         User       @relation(fields: [userId], references: [id])
+
+  // Phân nguồn AI vs GV (MỚI)
+  source       FeedbackSource @default(AI)
+
+  // Cho phép null khi là AI (MỚI)
+  userId       Int?
+  user         User?       @relation(fields: [userId], references: [id])
+
   content      String
   createdAt    DateTime   @default(now())
+
+  // Điểm chi tiết (Writing)
+  taskResponse Float?
+  coherence    Float?
+  lexical      Float?
+  grammar      Float?
+
+  // Highlight lỗi (JSON nhanh gọn)
+  highlights   Json?
+
+  // Audit AI (MỚI) – chỉ set khi source=AI
+  modelVersion String?
+  aiProvider   String?
+  tokensPrompt Int?
+  tokensOutput Int?
+  costUsd      Float?
+
+  @@index([submissionId, source])
+  @@index([userId])
+  // Bật khi muốn “mỗi nguồn 1 feedback / submission”
+  // @@unique([submissionId, source], name: "uniq_feedback_per_source")
 }
 
 model Payment {

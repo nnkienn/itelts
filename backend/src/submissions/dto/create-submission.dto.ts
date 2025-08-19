@@ -1,20 +1,17 @@
-import { IsEnum, IsOptional, IsString, IsNumber, isNumber } from 'class-validator';
+import { IsEnum, IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateSubmissionDto {
-    @IsEnum(['Speaking', 'Writing'])
-    type: string;
+  type: 'WRITING';              // "WRITING" (sau này có thể "SPEAKING")
 
-    @IsOptional()
-    @IsNumber()
-    paymentId?: number;
+  @IsString()
+  @IsNotEmpty()
+  contentText: string;       // Bài viết của học viên
 
-    @IsOptional()
-    @IsString()
-    audioUrl?: string;
+  @IsOptional()
+  @IsInt()
+  promptId?: number;         // Bank đề (nếu có)
 
-    @IsOptional()
-    @IsNumber()
-    contentText?: string;
-
-
+  @IsOptional()
+  @IsInt()
+  paymentId?: number;        // Nếu bài này là bài có trả phí
 }
