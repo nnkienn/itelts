@@ -9,9 +9,13 @@ export interface RegisterPayload {
 }
 
 export interface LoginPayload {
+ // authThunk.ts
   email: string;
   password: string;
-}
+  remember?: boolean; // 👈 thêm dòng này
+};
+
+
 
 export interface User {
   id: number;
