@@ -5,7 +5,7 @@ export default function RegisterForm() {
         <div className="flex min-h-screen w-screen items-center justify-center bg-gray-200 p-4">
             <div className="flex flex-col md:flex-row w-full max-w-5xl overflow-hidden rounded-2xl shadow-lg bg-white">
                 {/* Left banner */}
-                <div className="md:w-1/2 h-full">
+                <div className="md:w-1/2">
                     <img src="/login.png" alt="Ai cham bai viet" className="rounded-2xl h-full w-full object-cover" />
                 </div>
                 {/* right banner */}
