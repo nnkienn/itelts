@@ -1,28 +1,33 @@
-// src/app/(public)/layout.tsx
-import type { Metadata } from "next";
-import "../globals.css";
+"use client";
+
+import { useState } from "react";
 import NavbarPublic from "@/components/layout/NavbarPublic";
 import FooterPublic from "@/components/layout/FooterPublic";
+import Sidebar from "@/components/layout/Slidebar";
 
-export const metadata: Metadata = {
-  title: "My App - Public",
-  description: "Trang dành cho người chưa đăng nhập",
-};
+export default function PublicLayout({ children }: { children: React.ReactNode }) {
+  const [isOpen, setIsOpen] = useState(true);
 
-export default function PublicLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
   return (
     <html lang="en">
-      <body>
-        <NavbarPublic></NavbarPublic>
-        {/* Nội dung trang con */}
-        <main className="min-h-screen">{children}</main>
+      <body className="flex flex-col min-h-screen">
+        {/* Navbar */}
+        <NavbarPublic />
 
-        {/* Footer public */}
-        <FooterPublic></FooterPublic>
+        <div className="flex flex-1 pt-16">
+          {/* Sidebar cố định */}
+          <Sidebar isOpen={isOpen} setIsOpen={setIsOpen} />
+
+          {/* Content chừa khoảng cho Sidebar */}
+          <div
+            className={`flex-1 flex flex-col transition-all duration-300 ${
+              isOpen ? "ml-64" : "ml-20"
+            }`}
+          >
+            <main className="flex-1">{children}</main>
+            <FooterPublic />
+          </div>
+        </div>
       </body>
     </html>
   );
