@@ -61,8 +61,49 @@ export default function PublicHomePage() {
                     />
 
                 </div>
-
             </section>
+
+            <section className="grid place-items-center text-center bg-white px-6 py-16">
+                <span className="text-4xl font-medium mb-4 text-gray-600">
+                    AI that writes with you, not for you
+                </span>
+                <span className="text-gray-600 max-w-2xl">
+                    ScoringIelts works alongside you to help you craft clear, polished, and professional writing — in a fraction of the time it usually takes. Welcome to the future of writing.
+                </span>
+            </section>
+
+            {/* Analyse Section */}
+            <section className="px-8 py-16 bg-white flex justify-center">
+                <div className="w-full max-w-5xl rounded-3xl border border-green-500 shadow-lg shadow-green-100 p-10 text-center">
+                    {/* Tiêu đề */}
+                    <h2 className="text-2xl font-semibold text-gray-900 mb-12">
+                        Millions are becoming better writers
+                    </h2>
+                    {/* Grid thống kê */}
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-6">
+                        <div>
+                            <p className="text-3xl font-bold text-green-600">3+</p>
+                            <p className="text-gray-600">Million writers<br />worldwide</p>
+                        </div>
+                        <div>
+                            <p className="text-3xl font-bold text-green-600">3+</p>
+                            <p className="text-gray-600">Countries that<br />use ScoringIelts</p>
+                        </div>
+                        <div>
+                            <p className="text-3xl font-bold text-green-600">140+</p>
+                            <p className="text-gray-600">Institutions partnered<br />with ScoringIelts</p>
+                        </div>
+                        <div>
+                            <p className="text-3xl font-bold text-green-600">4.7/5</p>
+                            <p className="text-gray-600">rating</p>
+                        </div>
+                    </div>
+
+
+                </div>
+            </section>
+
+            
         </div>
     );
 }

@@ -6,7 +6,7 @@ import { FaFacebookF, FaYoutube, FaInstagram, FaTiktok } from "react-icons/fa"
 
 export default function Footer() {
     return (
-        <footer className="bg-[#b9e7b3] text-white py-10">
+        <footer className="bg-[#edf6f6] text-white py-10">
             <div className="container mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left">
 
                 {/* Cột 1: Logo + mô tả */}

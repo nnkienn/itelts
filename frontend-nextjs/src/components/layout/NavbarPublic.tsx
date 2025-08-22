@@ -18,7 +18,7 @@ export default function navbar() {
                         href="/signin"
                         className="border border-gray-400 text-sm font-bold text-gray-500 px-4 py-1.5 rounded-md hover:bg-gray-100 flex items-center gap-1"
                     >
-                        ► Sign up / Log in
+                        ► Sign up
                     </Link>
                 </div>
 
