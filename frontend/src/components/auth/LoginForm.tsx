@@ -1,6 +1,30 @@
+"use client";
+
+import { useAppDispatch } from "@/hooks/useAppDispatch";
+import { useAppSelector } from "@/hooks/useAppSelector";
+import { loginUser } from "@/store/slices/authSlice";
 import Link from "next/link";
+import { useRouter } from "next/navigation"; // App Router dùng "next/navigation" chứ không phải "next/router"
+import { useState } from "react";
 
 export default function LoginPage() {
+  const dispatch = useAppDispatch();
+  const { loading, error } = useAppSelector((state) => state.auth);
+  const router = useRouter();
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const res = await dispatch(loginUser({ email, password }));
+
+    if (loginUser.fulfilled.match(res)) {
+      router.push("/homepage");
+    }
+  };
+
   return (
     <div className="flex min-h-screen w-screen items-center justify-center bg-gray-200 p-4">
       <div className="flex flex-col md:flex-row w-full max-w-5xl bg-white rounded-2xl shadow-lg overflow-hidden">
@@ -17,11 +41,13 @@ export default function LoginPage() {
         <div className="md:w-1/2 w-full p-8 md:p-10 flex flex-col justify-center">
           <h1 className="md:text-3xl text-gray-700 font-bold mb-4">Welcome!</h1>
 
-          <form className="space-y-4">
+          <form onSubmit={handleLogin} className="space-y-4">
             <div>
               <span className="block px-2 text-gray-400 text-sm">Email</span>
               <input
                 type="email"
+                value={email} // ✅ buộc state email
+                onChange={(e) => setEmail(e.target.value)} // ✅ set state
                 className="border-2 w-full border-gray-200 rounded-2xl px-4 py-2 text-gray-600"
               />
             </div>
@@ -30,16 +56,21 @@ export default function LoginPage() {
               <span className="block px-2 text-gray-400 text-sm">Password</span>
               <input
                 type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 className="border-2 w-full border-gray-200 rounded-2xl px-4 py-2 text-gray-600"
               />
             </div>
 
+            {/* nút login sẽ disabled khi loading */}
             <button
               type="submit"
+              disabled={loading}
               className="w-full rounded-2xl px-4 py-2 text-white font-bold bg-green-500 hover:bg-green-700 transition disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              Login
+              {loading ? "Logging in..." : "Login"}
             </button>
+            {error && <p className="text-red-500 text-sm">{error}</p>}
           </form>
 
           {/* Register link */}
