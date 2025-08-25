@@ -54,31 +54,7 @@ export default function WritingCheckerService() {
         <Editor />
 
         <div className="bg-white rounded-2xl shadow p-6">
-          <ScoreHeader
-            score={87}
-            totalIssues={2}
-            grammarIssues={2}
-            activeTab={activeTab}
-            onTabChange={setActiveTab}
-            onViewDetails={() => setShowModal(true)}
-          />
-
-          <div className="mt-6 space-y-4">
-            {activeTab === "all" && (
-              <>
-                <GrammarCard />
-                <GrammarCard
-                  before="function."
-                  after=""
-                  explanation="Remove this word."
-                />
-              </>
-            )}
-            {activeTab === "grammar" && <GrammarCard />}
-            {activeTab === "recommendations" && (
-              <div className="text-gray-600">✅ No recommendations yet</div>
-            )}
-          </div>
+       
         </div>
       </div>
 

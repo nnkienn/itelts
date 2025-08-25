@@ -40,7 +40,7 @@ export default function HomePage() {
 
           {/* Grade Writing */}
           <Link
-            href="/grade"
+            href="/writting-checker"
             className="flex flex-col items-start p-6 rounded-2xl border hover:shadow-lg transition bg-white"
           >
             <div className="flex items-center gap-3 mb-4">
